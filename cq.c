@@ -8,17 +8,89 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "cust.h"
 
 int main(int argc, char** argv)
 {
-    if(argc == 1){
-        puts("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>");
+    long* q_size,   //Queue Size
+        * a_time,   //Arrival Time
+        * d_time,   //Deposit Time
+        * w_time,   //Withdrawal Time
+        * i_time;   //Information Time
+
+    if(argc == 1)
+    {
+        fputs("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
     }
-    else if(argc != 6){
-        puts("Error: Invalid Number of Arguments\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>");
+    else if(argc != 6)
+    {
+        fputs("Error: Invalid Number of Arguments\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
     }
 
+    q_size = (int*)malloc(sizeof(int));
+    *q_size = strtol(argv[1], NULL, 10);
+    if(*q_size <= 0)
+    {
+        free(q_size);
+        fputs("Error: Invalid Queue Size\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
+        return EXIT_FAILURE;
+    }
+
+    a_time = (int*)malloc(sizeof(int));
+    *a_time = strtol(argv[2], NULL, 10);
+    if(*a_time <= 0)
+    {
+        free(q_size);
+        free(a_time);
+        fputs("Error: Invalid Arrival Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
+        return EXIT_FAILURE;
+    }
+
+    d_time = (int*)malloc(sizeof(int));
+    *d_time = strtol(argv[3], NULL, 10);
+    if(*d_time <= 0)
+    {
+        free(q_size);
+        free(a_time);
+        free(d_time);
+        fputs("Error: Invalid Deposit Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
+        return EXIT_FAILURE;
+    }
+
+    w_time = (int*)malloc(sizeof(int));
+    *w_time = strtol(argv[4], NULL, 10);
+    if(*w_time <= 0)
+    {
+        free(q_size);
+        free(a_time);
+        free(d_time);
+        free(w_time);
+        fputs("Error: Invalid Withdrawal Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
+        return EXIT_FAILURE;
+    }
+
+    i_time = (int*)malloc(sizeof(int));
+    *i_time = strtol(argv[5], NULL, 10);
+    if(*d_time <= 0)
+    {
+        free(q_size);
+        free(a_time);
+        free(d_time);
+        free(w_time);
+        free(i_time);
+        fputs("Error: Invalid Information Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
+        return EXIT_FAILURE;
+    }
+
+    cust_t* c_queue = (cust_t*)malloc(*q_size * sizeof(cust_t));
+    
+
+    free(q_size);
+    free(a_time);
+    free(d_time);
+    free(w_time);
+    free(i_time);
     return EXIT_SUCCESS;
 }
