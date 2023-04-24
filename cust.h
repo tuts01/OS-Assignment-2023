@@ -4,7 +4,8 @@
  * @date_created    29/03/2023
  * @last_modified   30/03/2023 12:26
  * @description     Contains a struct representing a customer (number and 
- *                  service type)
+ *                  service type) as well as a function that periodically
+ *                  adds a customer entry to the queue
 */
 
 #ifndef CUST_H
@@ -24,8 +25,10 @@ typedef enum {W, D, I} service_t;
 */
 typedef struct
 {
-    int custNo; //Customer number
+    long custNo; //Customer number
     service_t service; //Service required
 } cust_t;
+
+
 
 #endif
