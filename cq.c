@@ -10,14 +10,14 @@
 #include <stdlib.h>
 #include "cust.h"
 
+long q_size,   //Queue Size
+     a_time,   //Arrival Time
+     d_time,   //Deposit Time
+     w_time,   //Withdrawal Time
+     i_time;   //Information Time
+
 int main(int argc, char** argv)
 {
-    long* q_size,   //Queue Size
-        * a_time,   //Arrival Time
-        * d_time,   //Deposit Time
-        * w_time,   //Withdrawal Time
-        * i_time;   //Information Time
-
     if(argc == 1)
     {
         fputs("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
@@ -29,28 +29,22 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    q_size = (int*)malloc(sizeof(int));
-    *q_size = strtol(argv[1], NULL, 10);
-    if(*q_size <= 0)
+    q_size = strtol(argv[1], NULL, 10);
+    if(q_size <= 0)
     {
-        free(q_size);
         fputs("Error: Invalid Queue Size\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
     }
 
-    a_time = (int*)malloc(sizeof(int));
-    *a_time = strtol(argv[2], NULL, 10);
-    if(*a_time <= 0)
+    a_time = strtol(argv[2], NULL, 10);
+    if(a_time <= 0)
     {
-        free(q_size);
-        free(a_time);
         fputs("Error: Invalid Arrival Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
     }
 
-    d_time = (int*)malloc(sizeof(int));
-    *d_time = strtol(argv[3], NULL, 10);
-    if(*d_time <= 0)
+    d_time = strtol(argv[3], NULL, 10);
+    if(d_time <= 0)
     {
         free(q_size);
         free(a_time);
@@ -59,9 +53,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    w_time = (int*)malloc(sizeof(int));
-    *w_time = strtol(argv[4], NULL, 10);
-    if(*w_time <= 0)
+    w_time = strtol(argv[4], NULL, 10);
+    if(w_time <= 0)
     {
         free(q_size);
         free(a_time);
@@ -71,9 +64,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    i_time = (int*)malloc(sizeof(int));
-    *i_time = strtol(argv[5], NULL, 10);
-    if(*d_time <= 0)
+    i_time = strtol(argv[5], NULL, 10);
+    if(d_time <= 0)
     {
         free(q_size);
         free(a_time);
@@ -84,8 +76,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    cust_t* c_queue = (cust_t*)malloc(*q_size * sizeof(cust_t));
-    
+    cust_t* c_queue = (cust_t*)malloc(q_size * sizeof(cust_t));
 
     free(q_size);
     free(a_time);
