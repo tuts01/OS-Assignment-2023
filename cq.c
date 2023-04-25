@@ -2,7 +2,7 @@
  * @file            cq.c
  * @author          Tristan S. Tutungis
  * @date_created    29/03/2023
- * @last_modified   29/03/2023
+ * @last_modified   25/04/2023 20:43
  * @description     
 */
 
@@ -78,10 +78,5 @@ int main(int argc, char** argv)
 
     cust_t* c_queue = (cust_t*)malloc(q_size * sizeof(cust_t));
 
-    free(q_size);
-    free(a_time);
-    free(d_time);
-    free(w_time);
-    free(i_time);
     return EXIT_SUCCESS;
 }
