@@ -2,7 +2,7 @@
  * @file            cust.h
  * @author          Tristan S. Tutungis
  * @date_created    29/03/2023
- * @last_modified   30/03/2023 12:26
+ * @last_modified   25/04/2023 20:58
  * @description     Contains a struct representing a customer (number and 
  *                  service type) as well as a function that periodically
  *                  adds a customer entry to the queue
@@ -29,6 +29,6 @@ typedef struct
     service_t service; //Service required
 } cust_t;
 
-
+void* customer(void *queue);
 
 #endif
