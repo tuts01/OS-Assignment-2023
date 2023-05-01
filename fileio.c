@@ -25,10 +25,9 @@ FILE* open(char* name, char* mode)
     return file; //Return the open file stream
 }
 
-cust_t* readCustFile(FILE* file)
+cust_t* readCustFile(FILE* file, _Bool* eof)
 {
     cust_t* customer = NULL;
-    bool done = false;
     char* curLine = (char*)calloc(MAXLINELEN + 1, sizeof(char));
     const char s[2] = " ";
     char* token;
@@ -36,9 +35,13 @@ cust_t* readCustFile(FILE* file)
 
     if(file != NULL)
     {
-        customer = (cust_t*)malloc(sizeof(cust_t));
+        if(fgets(curLine, MAXLINELEN, file) == NULL)
+        {
+            *eof = true;
+            return NULL;
+        }
 
-        fgets(curLine, MAXLINELEN, file);
+        customer = (cust_t*)malloc(sizeof(cust_t));
 
         token = strtok(curLine);
         custNo = strtol(token, NULL, 10);
