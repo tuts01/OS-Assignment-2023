@@ -8,7 +8,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "cust.h"
+#include "queue.h"
+#include "fileio.h"
 
 long q_size,   //Queue Size
      a_time,   //Arrival Time
@@ -16,9 +19,17 @@ long q_size,   //Queue Size
      w_time,   //Withdrawal Time
      i_time;   //Information Time
 
+int running_threads; //Number of running threads
+
+pthread_mutex_t queue_mutex;
+pthread_mutex_t file_mutex;
+
 int main(int argc, char** argv)
 {
-    if(argc == 1)
+    pthread_t cust_thread;
+    pthread_t teller_thread[4];
+
+    pif(argc == 1)
     {
         fputs("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
@@ -30,53 +41,33 @@ int main(int argc, char** argv)
     }
 
     q_size = strtol(argv[1], NULL, 10);
-    if(q_size <= 0)
-    {
-        fputs("Error: Invalid Queue Size\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    if(q_size <= 0) return printerr("Invalid Queue Size");
 
     a_time = strtol(argv[2], NULL, 10);
-    if(a_time <= 0)
-    {
-        fputs("Error: Invalid Arrival Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    if(a_time <= 0) return printerr("Invalid Arrival Time");
 
     d_time = strtol(argv[3], NULL, 10);
-    if(d_time <= 0)
-    {
-        free(q_size);
-        free(a_time);
-        free(d_time);
-        fputs("Error: Invalid Deposit Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    if(d_time <= 0) return printerr("Invalid Deposit Time");
 
     w_time = strtol(argv[4], NULL, 10);
-    if(w_time <= 0)
-    {
-        free(q_size);
-        free(a_time);
-        free(d_time);
-        free(w_time);
-        fputs("Error: Invalid Withdrawal Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    if(w_time <= 0) return printerr("Invalid Withdrawal Time");
 
     i_time = strtol(argv[5], NULL, 10);
-    if(d_time <= 0)
-    {
-        free(q_size);
-        free(a_time);
-        free(d_time);
-        free(w_time);
-        free(i_time);
-        fputs("Error: Invalid Information Time\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    if(d_time <= 0) return printerr("Invalid Information Time");
 
-    cust_t* c_queue = (cust_t*)malloc(q_size * sizeof(cust_t));
+    queue_t* c_queue = create_queue(q_size);
+
+    pthread_create(&cust_thread, NULL, customer, c_queue);
+
+    for(int i = 0; i < 4; i++) pthread_create(&teller_thread[i], NULL, teller, NULL);
+
+    destroy_queue(c_queue);
 
     return EXIT_SUCCESS;
+}
+
+int printerr(char* errstr)
+{
+    fprintf(stderr, "Error: %s\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", errstr);
+    return EXIT_FAILURE;
 }
