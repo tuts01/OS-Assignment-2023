@@ -2,7 +2,7 @@
  * @file            queue.h
  * @author          Tristan S. Tutungis
  * @date_created    22/04/2023
- * @last_modified   25/04/2023 20:16
+ * @last_modified   02/05/2023 10:44
  * @description     Contains a struct that represents a queue of customers,
  *                  allowing it to be passed to a pthread function. It also
  *                  contains functions required to manipulate the queue.
@@ -41,17 +41,17 @@ queue_t* create_queue(int size);
 void destroy_queue(queue_t* queue);
 
 /**
- * @function    add
+ * @function    add_queue
  * @purpose     Adds an element to the queue
 */
-void add(queue_t* queue, cust_t* customer);
+void add_queue(queue_t* queue, cust_t* customer);
 
 /**
- * @function    remove
+ * @function    remove_queue
  * @returns     customer (cust_t*) - pointer to the customer removed
  * @purpose     Creates a queue in the form of an array and returns it to the
  *              calling function.
 */
-cust_t* remove(queue_t* queue);
+cust_t* remove_queue(queue_t* queue);
 
 #endif

@@ -2,7 +2,7 @@
  * @file            queue.h
  * @author          Tristan S. Tutungis
  * @date_created    24/04/2023
- * @last_modified   25/04/2023 20:17
+ * @last_modified   02/05/2023 10:43
  * @description     Contains a struct that represents a queue of customers,
  *                  allowing it to be passed to a pthread function. It also
  *                  contains functions required to manipulate the queue.
@@ -28,7 +28,7 @@ queue_t* create_queue(int size)
     queue->num = 0;
 
     //Allocate memory for the array itself - size is fixed
-    queue->cust_queue = (cust_t*)malloc(size * sizeof(cust_t));
+    queue->cust_queue = (cust_t**)malloc(size * sizeof(cust_t));
 
     return queue;
 }
@@ -47,10 +47,10 @@ void destroy_queue(queue_t* queue)
 }
 
 /**
- * @function    add
+ * @function    add_queue
  * @purpose     Adds an element to the queue
 */
-void add(queue_t* queue, cust_t* customer)
+void add_queue(queue_t* queue, cust_t* customer)
 {
     //Check that we haven't exceeded the maximum size of the queue
     if(queue->num < queue->queue_size)
@@ -61,12 +61,12 @@ void add(queue_t* queue, cust_t* customer)
 }
 
 /**
- * @function    remove
+ * @function    remove_queue
  * @returns     customer (cust_t*) - pointer to the customer removed
  * @purpose     Creates a queue in the form of an array and returns it to the
  *              calling function.
 */
-cust_t* remove(queue_t* queue)
+cust_t* remove_queue(queue_t* queue)
 {
     cust_t* customer = queue->cust_queue[0]; //Get customer from queue
 
@@ -78,7 +78,7 @@ cust_t* remove(queue_t* queue)
 
     queue->num--; //Decrement the count
 
-    //Set the final element to NULL - it has been moved down already so it is no longer needed
+    //Set the final element to NULL - it has been moved down already, so it is no longer needed
     queue->cust_queue[queue->num] = NULL;
 
     return customer;
