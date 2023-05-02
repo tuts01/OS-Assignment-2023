@@ -22,9 +22,10 @@ long q_size,   //Queue Size
      w_time,   //Withdrawal Time
      i_time;   //Information Time
 
-int running_threads; //Number of running threads
+int running_tellers = 0; //Number of running teller threads
 _Bool done; //Boolean to indicate whether all customers have been read
 
+pthread_mutex_t num_mutex;
 pthread_mutex_t queue_mutex;
 pthread_mutex_t file_mutex;
 pthread_mutex_t sig_mutex;
@@ -35,6 +36,7 @@ int main(int argc, char** argv)
     pthread_t cust_thread;
     pthread_t teller_thread[4];
 
+    num_mutex = PTHREAD_MUTEX_INITIALIZER;
     queue_mutex = PTHREAD_MUTEX_INITIALIZER;
     file_mutex = PTHREAD_MUTEX_INITIALIZER;
     sig_mutex = PTHREAD_MUTEX_INITIALIZER;

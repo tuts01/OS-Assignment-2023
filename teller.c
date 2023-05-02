@@ -35,7 +35,8 @@ void* teller(void* queue_ptr)
         pthread_mutex_unlock(&queue_mutex);
 
         pthread_mutex_lock(&file_mutex);
-        fprintf(r_log, "Teller:")
+        fprintf(r_log, "Teller: %d\nCustomer: %d\nArrival Time: %s\nCompletion Time: %s\n");
+
     }
     return NULL;
 }
