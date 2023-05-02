@@ -9,9 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include "cust.h"
 #include "queue.h"
 #include "fileio.h"
+#include "teller.h"
+#include "misc.h"
 
 long q_size,   //Queue Size
      a_time,   //Arrival Time
@@ -20,16 +23,24 @@ long q_size,   //Queue Size
      i_time;   //Information Time
 
 int running_threads; //Number of running threads
+_Bool done; //Boolean to indicate whether all customers have been read
 
 pthread_mutex_t queue_mutex;
 pthread_mutex_t file_mutex;
+pthread_mutex_t sig_mutex;
+pthread_cond_t teller_cond;
 
 int main(int argc, char** argv)
 {
     pthread_t cust_thread;
     pthread_t teller_thread[4];
 
-    pif(argc == 1)
+    queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+    file_mutex = PTHREAD_MUTEX_INITIALIZER;
+    sig_mutex = PTHREAD_MUTEX_INITIALIZER;
+    teller_cond = PTHREAD_COND_INITIALIZER;
+
+    if(argc == 1)
     {
         fputs("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
         return EXIT_FAILURE;
@@ -64,10 +75,4 @@ int main(int argc, char** argv)
     destroy_queue(c_queue);
 
     return EXIT_SUCCESS;
-}
-
-int printerr(char* errstr)
-{
-    fprintf(stderr, "Error: %s\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", errstr);
-    return EXIT_FAILURE;
 }
