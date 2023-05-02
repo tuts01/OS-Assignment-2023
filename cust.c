@@ -8,22 +8,27 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include <time.h>
 #include "cust.h"
 #include "queue.h"
 #include "fileio.h"
+#include "misc.h"
 
 extern long a_time;
+extern bool done;
 extern pthread_mutex_t queue_mutex;
 extern pthread_mutex_t file_mutex;
+extern pthread_mutex_t sig_mutex;
+extern pthread_cond_t teller_cond;
 
 void* customer(void *queue_ptr)
 {
     FILE* c_file = open(INFILENAME, "r");
     FILE* r_log = open(OUTFILENAME, "a");
-    bool done = false;
+    done = false;
     queue_t* queue = (queue_t*)queue_ptr;
     cust_t* cust;
     char service;
@@ -32,7 +37,7 @@ void* customer(void *queue_ptr)
     {
         cust = readCustFile(c_file, &done);
         
-        if(cust = NULL) done = true;
+        if(cust == NULL) done = true;
         else
         {
             switch(cust->service)
@@ -50,16 +55,22 @@ void* customer(void *queue_ptr)
                     break;
             }
 
-            struct tm* curtime = localtime(time(NULL));
+            cust->arrivalTime = get_time()
+
+            pthread_mutex_lock(&file_mutex);
+            fprintf(r_log, "%s\n%ld: %c\nArrival Time: %s\n%s\n", DIVIDER,
+                    cust->custNo, service, cust->arrivalTime, DIVIDER);
+            fflush(r_log);
+            pthread_mutex_unlock(&file_mutex);
 
             pthread_mutex_lock(&queue_mutex);
-
-            fprintf(r_log, "%s\n%d: %c\nArrival Time: %d:%d:%d\n%s", DIVIDER,
-                    cust->custNo, service, curtime->tm_hour, curtime->tm_min,
-                    curtime->tm_sec, DIVIDER);
             add(queue, cust);
-
             pthread_mutex_unlock(&queue_mutex);
+
+            pthread_mutex_lock(&sig_mutex);
+            pthread_cond_signal(&teller_cond);
+            pthread_mutex_unlock(&sig_mutex);
+
             sleep(a_time);
         }
     }
