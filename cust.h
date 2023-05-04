@@ -2,7 +2,7 @@
  * @file            cust.h
  * @author          Tristan S. Tutungis
  * @date_created    29/03/2023
- * @last_modified   01/05/2023 10:39
+ * @last_modified   04/05/2023 10:55
  * @description     Contains a struct representing a customer (number and 
  *                  service type) as well as a function that periodically
  *                  adds a customer entry to the queue
@@ -31,6 +31,11 @@ typedef struct
     char* arrivalTime; //Arrival time
 } cust_t;
 
+/**
+ * @function    customer
+ * @returns     NULL (void*)
+ * @purpose     Periodically read a list of customers from a file
+*/
 void* customer(void *queue);
 
 #endif

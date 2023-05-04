@@ -3,77 +3,94 @@
  * @author          Tristan S. Tutungis
  * @date_created    29/03/2023
  * @last_modified   25/04/2023 20:43
- * @description     
+ * @description     Program which simulates the producer-consumer problem in
+ *                  the context of bank tellers and customers. It uses POSIX
+ *                  threads for multithreading and mutual exclusion.
+ *                  NOTE: This program is designed to run on Linux and may not
+ *                  work on macOS due to differences in the implementation of
+ *                  certain non-C-standard components.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
+
 #include "cust.h"
 #include "queue.h"
 #include "fileio.h"
 #include "teller.h"
 #include "misc.h"
 
-long q_size,   //Queue Size
-     a_time,   //Arrival Time
-     d_time,   //Deposit Time
-     w_time,   //Withdrawal Time
-     i_time;   //Information Time
+/* Global Variables */
+long q_size;   //Queue Size
+long a_time;   //Arrival Time
+long d_time;   //Deposit Time
+long w_time;   //Withdrawal Time
+long i_time;   //Information Time
 
 int running_tellers = 0; //Number of running teller threads
 _Bool done; //Boolean to indicate whether all customers have been read
 
-pthread_mutex_t num_mutex;
-pthread_mutex_t queue_mutex;
-pthread_mutex_t file_mutex;
-pthread_mutex_t sig_mutex;
-pthread_cond_t teller_cond;
+pthread_mutex_t num_mutex;      //Mutex for editing the number of running teller threads
+pthread_mutex_t queue_mutex;    //Mutex for manipulating the queue
+pthread_mutex_t file_mutex;     //Mutex for writing to "r_log" file
+pthread_mutex_t sig_mutex;      //Mutex for conditional variable in the line immediately below
+pthread_cond_t teller_cond;     //Conditional variable for a teller to block while there are no customers in the queue
 
+/* Main function */
 int main(int argc, char** argv)
 {
-    pthread_t cust_thread;
-    pthread_t teller_thread[4];
+    pthread_t cust_thread;      //Customer thread
+    pthread_t teller_thread[4]; //Teller threads
 
+    //Initialise the mutex and condition variables
     num_mutex = PTHREAD_MUTEX_INITIALIZER;
     queue_mutex = PTHREAD_MUTEX_INITIALIZER;
     file_mutex = PTHREAD_MUTEX_INITIALIZER;
     sig_mutex = PTHREAD_MUTEX_INITIALIZER;
     teller_cond = PTHREAD_COND_INITIALIZER;
 
-    if(argc == 1)
-    {
-        fputs("Usage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
-    else if(argc != 6)
-    {
-        fputs("Error: Invalid Number of Arguments\nUsage:\ncq <queue size> <time to arrive> <deposit time> <withdrawal time> <information time>\n", stderr);
-        return EXIT_FAILURE;
-    }
+    /* Ensure the correct number of arguments were passed to the program, and
+       sanitise them - all must be positive integers */
 
+    //No arguments given
+    if(argc == 1) return printerr("No arguments given");
+
+    //Incorrect number of arguments given
+    if(argc != 6) return printerr("Invalid Number of Arguments");
+
+    //Invalid queue size
     q_size = strtol(argv[1], NULL, 10);
     if(q_size <= 0) return printerr("Invalid Queue Size");
 
+    //Invalid arrival time
     a_time = strtol(argv[2], NULL, 10);
     if(a_time <= 0) return printerr("Invalid Arrival Time");
 
+    //Invalid deposit time
     d_time = strtol(argv[3], NULL, 10);
     if(d_time <= 0) return printerr("Invalid Deposit Time");
 
+    //Invalid withdrawal time
     w_time = strtol(argv[4], NULL, 10);
     if(w_time <= 0) return printerr("Invalid Withdrawal Time");
 
+    //Invalid information time
     i_time = strtol(argv[5], NULL, 10);
     if(d_time <= 0) return printerr("Invalid Information Time");
 
+    //Initialise the queue
     queue_t* c_queue = create_queue(q_size);
 
+    //Launch the customer() thread
     pthread_create(&cust_thread, NULL, customer, c_queue);
 
-    for(int i = 0; i < 4; i++) pthread_create(&teller_thread[i], NULL, teller, NULL);
+    //Launch all the teller() threads THEN join them
+    for(int i = 0; i < 4; i++) pthread_create(&teller_thread[i], NULL, teller, c_queue);
+    for(int i = 0; i < 4; i++) pthread_join(teller_thread[i], NULL);
 
+    //Free up memory used for queue - no longer needed
     destroy_queue(c_queue);
 
     return EXIT_SUCCESS;
