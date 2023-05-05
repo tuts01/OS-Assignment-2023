@@ -95,5 +95,8 @@ void* customer(void *queue_ptr)
         }
     }
 
+    fclose(c_file);
+    fclose(r_log);
+
     return NULL; //Nothing to return
 }
