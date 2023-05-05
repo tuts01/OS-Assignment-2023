@@ -45,7 +45,6 @@ cust_t* readCustFile(FILE* file, _Bool* eof)
     char* curLine = (char*)calloc(MAXLINELEN + 1, sizeof(char));
     const char s[2] = " ";
     char* token;
-    long custNo; 
 
     //Only read if the file opened successfully
     if(file != NULL)
@@ -62,12 +61,12 @@ cust_t* readCustFile(FILE* file, _Bool* eof)
         customer = (cust_t*)malloc(sizeof(cust_t));
 
         //Tokenise the string and convert the first token to a long (customer ID)
-        token = strtok(curLine);
-        custNo = strtol(token, NULL, 10);
+        token = strtok(curLine, s);
+        customer->custNo = strtol(token, NULL, 10);
 
         /* Get the next token and assign an enum value based on it - NULL is
            immediately returned if an invalid entry is provided */
-        token = strtok(curLine);
+        token = strtok(NULL, s);
         switch(*token)
         {
             case 'W':

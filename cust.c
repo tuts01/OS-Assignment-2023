@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <time.h>
+#include <unistd.h>
 #include "cust.h"
 #include "queue.h"
 #include "fileio.h"
@@ -81,7 +82,7 @@ void* customer(void *queue_ptr)
             //Add customer to the queue
             //TODO: See TODO entry in teller.
             pthread_mutex_lock(&queue_mutex);
-            add(queue, cust);
+            add_queue(queue, cust);
             pthread_mutex_unlock(&queue_mutex);
 
             //Signal to a teller that a customer is ready to be served

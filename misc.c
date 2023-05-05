@@ -9,6 +9,7 @@
 /* Include Statements */
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "misc.h"
 
 /**
@@ -19,10 +20,10 @@
 char* get_time(void)
 {
     //Get the "current time" (seconds since the Epoch) and convert it to a string in the format "HH:MM:SS"
-    time_t time = time(NULL);
-    struct tm* start_time = localtime(&time);
+    time_t t = time(NULL);
+    struct tm* tm = localtime(&t);
     char* str = (char*)calloc(9, sizeof(char));
-    sprintf(str, "%d:%d:%d", curtime->tm_hour, curtime->tm_min, curtime->tm_sec);
+    sprintf(str, "%d:%d:%d", tm->tm_hour, tm->tm_min, tm->tm_sec);
     return str;
 }
 

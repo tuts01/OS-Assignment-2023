@@ -11,10 +11,12 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "teller.h"
 #include "queue.h"
 #include "misc.h"
 #include "cust.h"
+#include "fileio.h"
 
 /* Externally declared global variables - see cq.c */
 extern pthread_mutex_t num_mutex;
@@ -62,7 +64,7 @@ void* teller(void* queue_ptr)
         /* If there are no customers in the queue, the thread is to block until
            it is signalled that a customer has arrived in the queue */
         pthread_mutex_lock(&sig_mutex);
-        if(queue->num == 0) pthread_cond_wait(&teller_cond);
+        if(queue->num == 0) pthread_cond_wait(&teller_cond, &sig_mutex);
         pthread_mutex_lock(&sig_mutex);
 
         //Get the customer from the queue
@@ -73,8 +75,8 @@ void* teller(void* queue_ptr)
         //Write an entry to the log file outlining that the customer has arrived
         pthread_mutex_lock(&file_mutex);
         char* response_time = get_time();
-        fprintf(r_log, "Teller: %d\nCustomer: %d\nArrival Time: %s\nResponse Time: %s\n",
-                teller_num, *cust->custNo, *cust->arrivalTime, response_time);
+        fprintf(r_log, "Teller: %d\nCustomer: %ld\nArrival Time: %s\nResponse Time: %s\n",
+                teller_num, cust->custNo, cust->arrivalTime, response_time);
         fflush(r_log);
         free(response_time);
         pthread_mutex_unlock(&file_mutex);
@@ -99,8 +101,8 @@ void* teller(void* queue_ptr)
            has completed */
         pthread_mutex_lock(&file_mutex);
         char* completion_time = get_time();
-        fprintf(r_log, "Teller: %d\nCustomer: %d\nArrival Time: %s\nCompletion Time: %s\n",
-                teller_num, *cust->custNo, *cust->arrivalTime, completion_time);
+        fprintf(r_log, "Teller: %d\nCustomer: %ld\nArrival Time: %s\nCompletion Time: %s\n",
+                teller_num, cust->custNo, cust->arrivalTime, completion_time);
         fflush(r_log);
         free(completion_time);
         pthread_mutex_unlock(&file_mutex);

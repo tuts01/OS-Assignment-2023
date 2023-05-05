@@ -32,24 +32,17 @@ long i_time;   //Information Time
 int running_tellers = 0; //Number of running teller threads
 _Bool done; //Boolean to indicate whether all customers have been read
 
-pthread_mutex_t num_mutex;      //Mutex for editing the number of running teller threads
-pthread_mutex_t queue_mutex;    //Mutex for manipulating the queue
-pthread_mutex_t file_mutex;     //Mutex for writing to "r_log" file
-pthread_mutex_t sig_mutex;      //Mutex for conditional variable in the line immediately below
-pthread_cond_t teller_cond;     //Conditional variable for a teller to block while there are no customers in the queue
+pthread_mutex_t num_mutex = PTHREAD_MUTEX_INITIALIZER;      //Mutex for editing the number of running teller threads
+pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;    //Mutex for manipulating the queue
+pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;     //Mutex for writing to "r_log" file
+pthread_mutex_t sig_mutex = PTHREAD_MUTEX_INITIALIZER;      //Mutex for conditional variable in the line immediately below
+pthread_cond_t teller_cond = PTHREAD_COND_INITIALIZER;      //Conditional variable for a teller to block while there are no customers in the queue
 
 /* Main function */
 int main(int argc, char** argv)
 {
     pthread_t cust_thread;      //Customer thread
     pthread_t teller_thread[4]; //Teller threads
-
-    //Initialise the mutex and condition variables
-    num_mutex = PTHREAD_MUTEX_INITIALIZER;
-    queue_mutex = PTHREAD_MUTEX_INITIALIZER;
-    file_mutex = PTHREAD_MUTEX_INITIALIZER;
-    sig_mutex = PTHREAD_MUTEX_INITIALIZER;
-    teller_cond = PTHREAD_COND_INITIALIZER;
 
     /* Ensure the correct number of arguments were passed to the program, and
        sanitise them - all must be positive integers */

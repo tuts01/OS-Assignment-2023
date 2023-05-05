@@ -2,7 +2,7 @@
 # Date Created:		25/4/2023
 # Last Modified:	4/5/2023 17:41
 
-CFLAGS = -Wall -Wextra -g -pthread
+CFLAGS = -Wall -Wextra -g -pthread #-Werror
 OBJ = cq.o cust.o fileio.o misc.o queue.o teller.o
 EXEC = cq
 CC = gcc
@@ -28,3 +28,6 @@ queue.o : queue.c queue.h cust.c cust.h
 
 misc.o : misc.c misc.h
 	$(CC) $(CFLAGS) -c misc.c
+
+clean :
+	rm $(OBJ) $(EXEC)
