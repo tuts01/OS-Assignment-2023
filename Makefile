@@ -1,8 +1,8 @@
 # Author:			Tristan S. Tutungis
 # Date Created:		25/4/2023
-# Last Modified:	4/5/2023 17:41
+# Last Modified:	5/5/2023 15:12
 
-CFLAGS = -Wall -Wextra -g -pthread #-Werror
+CFLAGS = -Wall -Wextra -g -pthread -Werror
 OBJ = cq.o cust.o fileio.o misc.o queue.o teller.o
 EXEC = cq
 CC = gcc
