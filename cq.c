@@ -30,6 +30,7 @@ long w_time;   //Withdrawal Time
 long i_time;   //Information Time
 
 int running_tellers = 0; //Number of running teller threads
+int served[4]; //Number of customers that each teller has served
 _Bool done; //Boolean to indicate whether all customers have been read
 
 pthread_mutex_t num_mutex = PTHREAD_MUTEX_INITIALIZER;      //Mutex for editing the number of running teller threads
