@@ -26,6 +26,7 @@ extern pthread_mutex_t sig_mutex;
 extern pthread_cond_t teller_cond;
 
 extern int running_tellers;
+extern int served[4];
 extern _Bool done;
 
 extern long a_time;
@@ -56,6 +57,8 @@ void* teller(void* queue_ptr)
     unsigned int teller_num = running_tellers;
     pthread_mutex_unlock(&num_mutex);
 
+    served[teller_num - 1] = 0; //Number of customers served by this teller (index = teller # - 1)
+
     /* Keep looping until all customers are read from file (i.e. when done is
        set to true) and the queue has been emptied */
     while(!done || queue->num != 0)
@@ -75,7 +78,7 @@ void* teller(void* queue_ptr)
         //Write an entry to the log file outlining that the customer has arrived
         pthread_mutex_lock(&file_mutex);
         char* response_time = get_time();
-        fprintf(r_log, "Teller: %d\nCustomer: %ld\nArrival Time: %s\nResponse Time: %s\n",
+        fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nResponse Time: %s\n",
                 teller_num, cust->custNo, cust->arrivalTime, response_time);
         fflush(r_log);
         free(response_time);
@@ -101,12 +104,36 @@ void* teller(void* queue_ptr)
            has completed */
         pthread_mutex_lock(&file_mutex);
         char* completion_time = get_time();
-        fprintf(r_log, "Teller: %d\nCustomer: %ld\nArrival Time: %s\nCompletion Time: %s\n",
+        fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nCompletion Time: %s\n",
                 teller_num, cust->custNo, cust->arrivalTime, completion_time);
         fflush(r_log);
         free(completion_time);
         pthread_mutex_unlock(&file_mutex);
+
+        served[teller_num - 1]++;
     }
-    //TODO: Finish writing this function
+
+    pthread_mutex_lock(&file_mutex);
+    char* termination_time = get_time();
+    fprintf(r_log, "\nTermination: teller-%d\n#served customers: %d\nStart time: %s\nTermination time: %s\n",
+            teller_num, served[teller_num - 1], start_time, termination_time);
+    fflush(r_log);
+    pthread_mutex_unlock(&file_mutex);
+
+    free(termination_time);
+    free(start_time);
+
+    //If the exiting teller is the final teller, write a message outlining the total number
+    pthread_mutex_lock(&num_mutex);
+    if(running_tellers == 1)
+    {
+        fprintf(r_log, "\nTeller Statistic\nTeller-1 serves %d customers.\nTeller-2 serves %d customers.\nTeller-3 serves %d customers.\nTeller-4 serves %d customers.\n\nTotal number of customers: %d customers.",
+                served[0], served[1], served[2], served[3], served[0]+served[1]+served[2]+served[3]);
+    }
+    running_tellers--;
+    pthread_mutex_unlock(&num_mutex);
+
+    //Close the output file stream
+    fclose(r_log);
     return NULL;
 }
