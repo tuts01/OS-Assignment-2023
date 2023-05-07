@@ -5,12 +5,14 @@
  * @last_modified   04/05/2023 15:53
  * @description     Contains functions for reading from and writing to files
 */
-//TODO: Move some things to this file, maybe...
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "fileio.h"
+
+/* Externally declared global variables - see cq.c */
+extern bool done;
 
 /**
  * @function    open
@@ -39,7 +41,7 @@ FILE* open(char* name, char* mode)
  *              if the end of the file is reached
 */
 //TODO: Remove eof - does not need to be passed in as it is a global variable
-cust_t* readCustFile(FILE* file, _Bool* eof)
+cust_t* readCustFile(FILE* file)
 {
     cust_t* customer = NULL;
     char* curLine = (char*)calloc(MAXLINELEN + 1, sizeof(char));
@@ -53,7 +55,7 @@ cust_t* readCustFile(FILE* file, _Bool* eof)
            the file */
         if(fgets(curLine, MAXLINELEN, file) == NULL)
         {
-            *eof = true;
+            done = true;
             return NULL;
         }
 

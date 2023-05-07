@@ -45,7 +45,7 @@ void* customer(void *queue_ptr)
     while (!done)
     {
         //Retrieve a customer from the file
-        cust = readCustFile(c_file, &done);
+        cust = readCustFile(c_file);
 
         //If NULL is returned, EOF has been reached
         //TODO: Fix this if-else block as it may cause issues?
