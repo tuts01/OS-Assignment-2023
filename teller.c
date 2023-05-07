@@ -65,10 +65,15 @@ void* teller(void* queue_ptr)
         /* If there are no customers in the queue, the thread is to block until
            it is signalled that a customer has arrived in the queue */
 
-        if(!done) {
-            //Get the customer from the queue
-            pthread_mutex_lock(&queue_mutex);
-            while (queue->num <= 0) pthread_cond_wait(&teller_cond, &queue_mutex);
+        //Get the customer from the queue
+        pthread_mutex_lock(&queue_mutex);
+        while(queue->num <= 0) pthread_cond_wait(&teller_cond, &queue_mutex);
+        if(done)
+        {
+            pthread_mutex_unlock(&queue_mutex);
+        }
+        else
+        {
             cust_t *cust = remove_queue(queue);
             pthread_mutex_unlock(&queue_mutex);
 

@@ -86,6 +86,9 @@ void* customer(void *queue_ptr)
         }
     }
 
+    //Wake up any tellers that are still waiting
+    pthread_cond_broadcast(&teller_cond);
+
     //Close the file streams
     fclose(c_file);
     fclose(r_log);
