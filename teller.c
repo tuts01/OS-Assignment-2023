@@ -65,48 +65,49 @@ void* teller(void* queue_ptr)
         /* If there are no customers in the queue, the thread is to block until
            it is signalled that a customer has arrived in the queue */
 
-        //Get the customer from the queue
-        pthread_mutex_lock(&queue_mutex);
-        while(queue->num <= 0) pthread_cond_wait(&teller_cond, &queue_mutex);
-        cust_t* cust = remove_queue(queue);
-        pthread_mutex_unlock(&queue_mutex);
+        if(!done) {
+            //Get the customer from the queue
+            pthread_mutex_lock(&queue_mutex);
+            while (queue->num <= 0) pthread_cond_wait(&teller_cond, &queue_mutex);
+            cust_t *cust = remove_queue(queue);
+            pthread_mutex_unlock(&queue_mutex);
 
-        //Write an entry to the log file outlining that the customer has arrived
-        pthread_mutex_lock(&file_mutex);
-        char* response_time = get_time();
-        fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nResponse Time: %s\n",
-                teller_num, cust->custNo, cust->arrivalTime, response_time);
-        fflush(r_log);
-        free(response_time);
-        pthread_mutex_unlock(&file_mutex);
+            //Write an entry to the log file outlining that the customer has arrived
+            pthread_mutex_lock(&file_mutex);
+            char *response_time = get_time();
+            fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nResponse Time: %s\n",
+                    teller_num, cust->custNo, cust->arrivalTime, response_time);
+            fflush(r_log);
+            free(response_time);
+            pthread_mutex_unlock(&file_mutex);
 
-        //Simulate the service of the customer that has arrived
-        switch(cust->service)
-        {
-            case W:
-                sleep(w_time);
-                break;
+            //Simulate the service of the customer that has arrived
+            switch (cust->service) {
+                case W:
+                    sleep(w_time);
+                    break;
 
-            case D:
-                sleep(d_time);
-                break;
+                case D:
+                    sleep(d_time);
+                    break;
 
-            case I:
-                sleep(i_time);
-                break;
+                case I:
+                    sleep(i_time);
+                    break;
+            }
+
+            /* Write another entry to the log file now that the simulated operation
+               has completed */
+            pthread_mutex_lock(&file_mutex);
+            char *completion_time = get_time();
+            fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nCompletion Time: %s\n",
+                    teller_num, cust->custNo, cust->arrivalTime, completion_time);
+            fflush(r_log);
+            free(completion_time);
+            pthread_mutex_unlock(&file_mutex);
+
+            served[teller_num - 1]++;
         }
-
-        /* Write another entry to the log file now that the simulated operation
-           has completed */
-        pthread_mutex_lock(&file_mutex);
-        char* completion_time = get_time();
-        fprintf(r_log, "\nTeller: %d\nCustomer: %ld\nArrival Time: %s\nCompletion Time: %s\n",
-                teller_num, cust->custNo, cust->arrivalTime, completion_time);
-        fflush(r_log);
-        free(completion_time);
-        pthread_mutex_unlock(&file_mutex);
-
-        served[teller_num - 1]++;
     }
 
     pthread_mutex_lock(&file_mutex);
