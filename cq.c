@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
     //Invalid information time
     i_time = strtol(argv[5], NULL, 10);
-    if(d_time <= 0) return printerr("Invalid Information Time");
+    if(i_time <= 0) return printerr("Invalid Information Time");
 
     //Initialise the queue
     queue_t* c_queue = create_queue(q_size);
