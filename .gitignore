@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+cq
 
 # Debug files
 *.dSYM/
@@ -53,3 +54,4 @@ dkms.conf
 .vscode/settings.json
 
 .idea/
+r_log
