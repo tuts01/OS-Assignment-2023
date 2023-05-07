@@ -11,7 +11,7 @@
 
 #include "cust.h"
 
-#define MAXLINELEN 5 //Max length of line
+#define MAXLINELEN 8 //Max length of line
 #define INFILENAME "c_file" //Input file name
 #define OUTFILENAME "r_log" //Output file name
 //Divider for log file
