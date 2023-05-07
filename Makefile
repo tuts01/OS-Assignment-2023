@@ -31,4 +31,4 @@ misc.o : misc.c misc.h
 	$(CC) $(CFLAGS) -c misc.c
 
 clean :
-	rm $(OBJ) $(EXEC) r_log
+	rm $(OBJ) $(EXEC)
