@@ -40,7 +40,6 @@ FILE* open(char* name, char* mode)
  * @purpose     Read a customer from the passed file stream - sets eof to true
  *              if the end of the file is reached
 */
-//TODO: Remove eof - does not need to be passed in as it is a global variable
 cust_t* readCustFile(FILE* file)
 {
     cust_t* customer = NULL;
@@ -86,8 +85,6 @@ cust_t* readCustFile(FILE* file)
             default:
                 free(customer);
                 customer = NULL;
-                /* TODO: fix calling method (NULL being returned DOES NOT
-                    necessarily mean that the end of file has been reached) */
         }
     }    
 
