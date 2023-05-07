@@ -22,7 +22,6 @@
 extern pthread_mutex_t num_mutex;
 extern pthread_mutex_t queue_mutex;
 extern pthread_mutex_t file_mutex;
-extern pthread_mutex_t sig_mutex;
 extern pthread_cond_t teller_cond;
 
 extern int running_tellers;
@@ -63,15 +62,12 @@ void* teller(void* queue_ptr)
        set to true) and the queue has been emptied */
     while(!done || queue->num != 0)
     {
-        /* TODO: combine sig_mutex and queue_mutex into one to prevent a potential race condition */
         /* If there are no customers in the queue, the thread is to block until
            it is signalled that a customer has arrived in the queue */
-        pthread_mutex_lock(&sig_mutex);
-        if(queue->num == 0) pthread_cond_wait(&teller_cond, &sig_mutex);
-        pthread_mutex_lock(&sig_mutex);
 
         //Get the customer from the queue
         pthread_mutex_lock(&queue_mutex);
+        if(queue->num == 0) pthread_cond_wait(&teller_cond, &queue_mutex);
         cust_t* cust = remove_queue(queue);
         pthread_mutex_unlock(&queue_mutex);
 
