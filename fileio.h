@@ -30,6 +30,6 @@ FILE* open(char* name, char* mode);
  * @purpose     Read a customer from the passed file stream - sets eof to true
  *              if the end of the file is reached
 */
-cust_t* readCustFile(FILE* file, _Bool* eof);
+cust_t* readCustFile(FILE* file);
 
 #endif

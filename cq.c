@@ -6,19 +6,18 @@
  * @description     Program which simulates the producer-consumer problem in
  *                  the context of bank tellers and customers. It uses POSIX
  *                  threads for multithreading and mutual exclusion.
- *                  NOTE: This program is designed to run on Linux and may not
- *                  work on macOS due to differences in the implementation of
- *                  certain non-C-standard components.
+ *                  NOTE: This program is designed to run on Linux and may or
+ *                  may not work on macOS due to differences in the
+ *                  implementation of certain non-C-standard components.
 */
 
+/* Include statements */
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <stdbool.h>
 
 #include "cust.h"
 #include "queue.h"
-#include "fileio.h"
 #include "teller.h"
 #include "misc.h"
 
@@ -36,7 +35,6 @@ _Bool done; //Boolean to indicate whether all customers have been read
 pthread_mutex_t num_mutex = PTHREAD_MUTEX_INITIALIZER;      //Mutex for editing the number of running teller threads
 pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;    //Mutex for manipulating the queue
 pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;     //Mutex for writing to "r_log" file
-pthread_mutex_t sig_mutex = PTHREAD_MUTEX_INITIALIZER;      //Mutex for conditional variable in the line immediately below
 pthread_cond_t teller_cond = PTHREAD_COND_INITIALIZER;      //Conditional variable for a teller to block while there are no customers in the queue
 
 /* Main function */
@@ -72,7 +70,7 @@ int main(int argc, char** argv)
 
     //Invalid information time
     i_time = strtol(argv[5], NULL, 10);
-    if(d_time <= 0) return printerr("Invalid Information Time");
+    if(i_time <= 0) return printerr("Invalid Information Time");
 
     //Initialise the queue
     queue_t* c_queue = create_queue(q_size);

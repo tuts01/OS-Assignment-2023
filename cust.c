@@ -9,7 +9,6 @@
 
 /* Include Statements */
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include <time.h>
@@ -24,7 +23,6 @@ extern long a_time;
 extern bool done;
 extern pthread_mutex_t queue_mutex;
 extern pthread_mutex_t file_mutex;
-extern pthread_mutex_t sig_mutex;
 extern pthread_cond_t teller_cond;
 
 /**
@@ -47,10 +45,9 @@ void* customer(void *queue_ptr)
     while (!done)
     {
         //Retrieve a customer from the file
-        cust = readCustFile(c_file, &done);
+        cust = readCustFile(c_file);
 
         //If NULL is returned, EOF has been reached
-        //TODO: Fix this if-else block as it may cause issues?
         if(cust == NULL) done = true;
         else
         {
@@ -79,22 +76,17 @@ void* customer(void *queue_ptr)
             fflush(r_log);
             pthread_mutex_unlock(&file_mutex);
 
-            //Add customer to the queue
-            //TODO: See TODO entry in teller.
+            //Add customer to the queue and signal to a teller that a customer is ready to be served
             pthread_mutex_lock(&queue_mutex);
             add_queue(queue, cust);
-            pthread_mutex_unlock(&queue_mutex);
-
-            //Signal to a teller that a customer is ready to be served
-            //TODO: This could be improved.
-            pthread_mutex_lock(&sig_mutex);
             pthread_cond_signal(&teller_cond);
-            pthread_mutex_unlock(&sig_mutex);
+            pthread_mutex_unlock(&queue_mutex);
 
             sleep(a_time);//Wait 'm' seconds before continuing
         }
     }
 
+    //Close the file streams
     fclose(c_file);
     fclose(r_log);
 

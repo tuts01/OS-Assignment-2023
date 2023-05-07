@@ -1,6 +1,6 @@
 # Author:			Tristan S. Tutungis
 # Date Created:		25/4/2023
-# Last Modified:	5/5/2023 15:12
+# Last Modified:	7/5/2023 20:00
 
 CFLAGS = -Wall -Wextra -g -pthread -Werror
 OBJ = cq.o cust.o fileio.o misc.o queue.o teller.o
@@ -14,6 +14,7 @@ $(EXEC) : $(OBJ)
 # Compilation of object files
 cq.o : cq.c cust.c cust.h queue.c queue.h fileio.c fileio.h teller.c teller.h misc.c misc.h
 	$(CC) $(CFLAGS) -c cq.c
+
 cust.o : cust.c cust.h queue.c queue.h fileio.c fileio.h misc.c misc.h
 	$(CC) $(CFLAGS) -c cust.c
 
@@ -30,4 +31,4 @@ misc.o : misc.c misc.h
 	$(CC) $(CFLAGS) -c misc.c
 
 clean :
-	rm $(OBJ) $(EXEC)
+	rm $(OBJ) $(EXEC) r_log
