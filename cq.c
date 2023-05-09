@@ -82,6 +82,8 @@ int main(int argc, char** argv)
     for(int i = 0; i < 4; i++) pthread_create(&teller_thread[i], NULL, teller, c_queue);
     for(int i = 0; i < 4; i++) pthread_join(teller_thread[i], NULL);
 
+    //Join the customer() thread to make sure it has finished
+    pthread_join(cust_thread, NULL);
     //Free up memory used for queue - no longer needed
     destroy_queue(c_queue);
 

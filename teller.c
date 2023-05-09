@@ -68,7 +68,7 @@ void* teller(void* queue_ptr)
         //Get the customer from the queue
         pthread_mutex_lock(&queue_mutex);
         while(queue->num <= 0 && !done) pthread_cond_wait(&teller_cond, &queue_mutex);
-        if(done)
+        if(done && queue->num == 0)
         {
             pthread_mutex_unlock(&queue_mutex);
         }

@@ -21,6 +21,7 @@
 /* Externally declared global variables - see cq.c */
 extern long a_time;
 extern bool done;
+extern int running_tellers;
 extern pthread_mutex_t queue_mutex;
 extern pthread_mutex_t file_mutex;
 extern pthread_cond_t teller_cond;
@@ -76,6 +77,9 @@ void* customer(void *queue_ptr)
             fflush(r_log);
             pthread_mutex_unlock(&file_mutex);
 
+            //Wait if the queue is full (num == queue_size)
+            while(queue->num == queue->queue_size);
+
             //Add customer to the queue and signal to a teller that a customer is ready to be served
             pthread_mutex_lock(&queue_mutex);
             add_queue(queue, cust);
@@ -87,7 +91,7 @@ void* customer(void *queue_ptr)
     }
 
     //Wake up any tellers that are still waiting
-    while(queue->num !=0) pthread_cond_broadcast(&teller_cond);
+    while(running_tellers != 0) pthread_cond_broadcast(&teller_cond);
 
     //Close the file streams
     fclose(c_file);
